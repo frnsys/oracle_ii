@@ -15,7 +15,7 @@ import pygame
 import imutils
 import numpy as np
 import pygame.camera
-from pygame.locals import KEYDOWN, K_q, K_s
+from pygame.locals import KEYDOWN, K_q, K_s, K_SPACE
 
 DEBUG = False
 
@@ -87,7 +87,7 @@ def detect(on_detect):
             if event.type == KEYDOWN:
                 if event.key == K_q:
                     capture = False
-                elif event.key == K_s:
+                elif event.key == K_s or event.key == K_SPACE:
                     if card is None:
                         print('nothing found')
                     else:
