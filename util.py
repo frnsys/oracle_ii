@@ -1,7 +1,9 @@
 import cv2
 import pygame
 import numpy as np
+from tqdm import tqdm
 from PIL import Image
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 
 def flattener(image, pts, w, h):
@@ -68,9 +70,7 @@ def flattener(image, pts, w, h):
     dst = np.array([[0,0],[maxWidth-1,0],[maxWidth-1,maxHeight-1],[0, maxHeight-1]], np.float32)
     M = cv2.getPerspectiveTransform(temp_rect,dst)
     warp = cv2.warpPerspective(image, M, (maxWidth, maxHeight))
-    warp = cv2.cvtColor(warp,cv2.COLOR_BGR2GRAY)
-
-    return warp
+    return cv2.cvtColor(warp, cv2.COLOR_BGR2RGB)
 
 
 def cv2_to_pygame(img):
@@ -98,4 +98,35 @@ def pygame_to_cv2(img):
     return pil_to_cv2(pygame_to_pil(img))
 
 
+def pil_to_pygame(img):
+    raw_str = img.tobytes('raw', 'RGB')
+    return pygame.image.fromstring(raw_str, img.size, 'RGB')
 
+
+def run_parallel(arr, fn, n_jobs=8, use_kwargs=False):
+    if n_jobs==1:
+        return [fn(**a) if use_kwargs else fn(a) for a in tqdm(arr)]
+    #Assemble the workers
+    with ProcessPoolExecutor(max_workers=n_jobs) as pool:
+        #Pass the elements of array into function
+        if use_kwargs:
+            futures = [pool.submit(fn, **a) for a in arr]
+        else:
+            futures = [pool.submit(fn, a) for a in arr]
+        kwargs = {
+            'total': len(futures),
+            'unit': 'it',
+            'unit_scale': True,
+            'leave': True
+        }
+        #Print out the progress as tasks complete
+        for f in tqdm(as_completed(futures), **kwargs):
+            pass
+    out = []
+    #Get the results from the futures.
+    for i, future in tqdm(enumerate(futures)):
+        try:
+            out.append(future.result())
+        except Exception as e:
+            out.append(e)
+    return out

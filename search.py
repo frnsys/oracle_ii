@@ -1,25 +1,23 @@
+"""
+search images by similarity.
+runs a server to minimize image rehashing.
+"""
+
+import util
 import imagehash
 import numpy as np
 from PIL import Image
-from faiss import faiss
+from data import cards
 
-HASH_SIZE = 16 # must be power of 2
-D = HASH_SIZE**2
+HASH_SIZE = 128 # must be a power of 2
 
 
 def create_index(fnames, ids):
     """create similarity index"""
-    # <https://github.com/facebookresearch/faiss/wiki/Faiss-indexes>
-    # idx_ = faiss.IndexLSH(d, 2048) # this gets better more bits
-    # idx_ = faiss.IndexFlatL2(d) # best, but brute-force, and stores full vectors
-    idx_ = faiss.IndexFlatIP(D) # might be best option?
-    # see <https://github.com/facebookresearch/faiss/wiki/Getting-started-tutorial>
-
-    idx = faiss.IndexIDMap(idx_) # so we can specify our own indices
-    hashes = [imghash(fname) for fname in fnames]
-    hashes = np.stack(hashes)
-
-    idx.add_with_ids(hashes, np.array(ids))
+    idx = {}
+    hashes = util.run_parallel(fnames, imghash)
+    for id, hash in zip(ids, hashes):
+        idx[id] = hash
     return idx
 
 
@@ -28,21 +26,24 @@ def imghash(fname):
     uses whash, but other options are available:
     <https://github.com/JohannesBuchner/imagehash>"""
     img = Image.open(fname)
-    hash = imagehash.whash(img, hash_size=HASH_SIZE).hash.flatten()
-
-    # faiss requires float32
-    return hash.astype('float32')
+    return imagehash.whash(img, hash_size=HASH_SIZE)
 
 
-def search(img, idx, top_n=3):
-    hash = imagehash.whash(img, hash_size=HASH_SIZE).hash.flatten()[None, ...].astype('float32')
-    dists, ids = idx.search(hash, top_n)
-    return dists, ids
+def search(img, idx, max_distance=50, top_n=3):
+    """was using faiss, but kept getting segmentation fault.
+    brute force search instead"""
+    hash = imagehash.whash(img, hash_size=HASH_SIZE)
+    results = []
+    for id, h in idx.items():
+        dist = hash - h
+        if dist < max_distance:
+            results.append({'id': id, 'dist': dist, 'card': cards[id]})
+    return sorted(results, key=lambda r: r['dist'])[:top_n]
 
 
 if __name__ == '__main__':
-    from flask import Flask, request, jsonify
     from data import fnames, mids
+    from flask import Flask, request, jsonify
 
     print('preparing index...')
     idx = create_index(fnames, mids)
@@ -53,10 +54,10 @@ if __name__ == '__main__':
     @app.route('/', methods=['POST'])
     def query():
         data = request.get_json()
+        dist = data['max_distance']
         img = np.array(data['image']).astype('uint8')
         img = Image.fromarray(img)
-        dists, ids = search(img, idx)
-        return jsonify(results=[
-            {'id': id, 'dist': d} for id, d, in zip(ids, dists)])
+        results= search(img, idx, max_distance=dist)
+        return jsonify(results=results)
 
     app.run(port=8888)
