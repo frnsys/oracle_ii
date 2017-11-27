@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>mtg catalog</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Muli');
+    html, body {
+        padding: 0;
+        margin: 0;
+        font-family: 'Muli';
+        background: #eee;
+    }
+  </style>
+</head>
+<body>
+<ul id="cards">
+</ul>
+<script>
+    fetch('http://localhost:5000/').then(resp => {
+        console.log(resp);
+        return resp.json();
+      }).then(json => {
+        console.log(json);
+        var main = document.getElementById('cards');
+        Object.keys(json.cards).map(mid => {
+            var card = json.cards[mid];
+            var el = document.createElement('li');
+            el.innerHTML = `${card.name} (${card.quantity})`;
+            main.appendChild(el);
+        });
+    });
+</script>
+</body>
+</html>

@@ -11,6 +11,21 @@ A simple MTG card scanner
 - Run `python main.py` to start the scanner.
 - Press `s` or `spacebar` when a card is in view and highlighted with a red border. This saves the card's multiverse id to a text file (`data/collection.db`).
 
+The `lookup.py` script also lets you specify a card list and get their multiverse ids:
+
+    python lookup.py cardlist
+
+Where `cardlist` contains contents in the format:
+
+    Card Name [quantity]
+
+The quantity part is optional if it's just one card.
+
+## Running the catalog API
+
+- Once you've catalogued your cards, you can run the API with `python api.py`.
+- There's a demo page at `catalog/index.html`.
+
 ## Caveats
 
 - The scanner is very sensitive to light conditions. You will likely have to calibrate it for your environment.
