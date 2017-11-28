@@ -51,7 +51,7 @@ def Syntax():
     contain_op = oneOf(': ! < >')
 
     # e.g. `c:w` or `c!w` or `t:artifact` or `x:"destroy target creature"`
-    filter = Group(Word(alphanums, exact=1) + contain_op + (Word(alphanums) | QuotedString(quoteChar='"')))
+    filter = Group(Word(alphanums, exact=1) + contain_op + (Word(alphanums + '.') | QuotedString(quoteChar='"')))
 
     # parentheses
     lpar = Literal('(').suppress()
@@ -89,7 +89,7 @@ def make_predicate(q):
             return lambda c: (q in c.get(key, '').lower()) == pos
         elif op in ['<', '>']:
             q = float(q)
-            return lambda c: OPS[op](float(c.get(key) or 0), q)
+            return lambda c: c.get(key) is not None and OPS[op](float(c.get(key) or 0), q)
     else:
         q = q.lower()
         return lambda c: q in c['name'].lower()
