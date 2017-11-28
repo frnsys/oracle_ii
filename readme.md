@@ -39,14 +39,20 @@ The error rate likely could be improved by increasing the `HASH_SIZE` in `search
 
 ## Catalog
 
+### Preparing Data
+
+#### Update prices
+
+Prices are fetched from the `scryfall.com` API. You manually run `prices.py` to generate `data/prices.json`, which fetches prices for the cards in your collection. If you want to update the prices, you must manually do so by running this script again.
+
+#### Generate collection data
+
+Run `process.py` to generate `data/collection.json`, which is what the catalog app uses.
+
 ### Running
 
 - Once you've catalogued your cards, you can run the API with `python catalog.py`.
 - Then visit `localhost:5000`.
-
-### Updating prices
-
-Prices are fetched from the `scryfall.com` API. You manually run `prices.py` to generate `data/prices.json`, which fetches prices for the cards in your collection. If you want to update the prices, you must manually do so by running this script again.
 
 ### Search syntax
 
