@@ -40,7 +40,7 @@ The quantity part is optional if it's just one card.
 
 The error rate likely could be improved by increasing the `HASH_SIZE` in `search.py`. If you do that, you'll want to increase the `max_distance` value in `main.py` as well.
 
-## Search syntax (TODO)
+## Search syntax
 
 Operators:
 
@@ -55,6 +55,5 @@ Operators:
 Filters:
 
 - `c` for color
-- `m` for converted mana cost
 - `t` for type
 - `x` for text
