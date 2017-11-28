@@ -51,7 +51,7 @@ Run `process.py` to generate `data/collection.json`, which is what the catalog a
 
 ### Running
 
-- Once you've catalogued your cards, you can run the API with `python catalog.py`.
+- Once you've catalogued your cards, you can run the API with `python app.py`.
 - Then visit `localhost:5000`.
 
 ### Search syntax
