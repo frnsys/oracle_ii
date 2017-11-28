@@ -6,8 +6,8 @@ A simple MTG card scanner and catalog searcher
 
 ### Setup
 
-- Install the requirements: `pip install -r requirements.txt`
-- Download `AllSets.json` from [mtgjson.com](http://mtgjson.com/).
+- Change into the `scanner` directory and install the requirements: `pip install -r requirements.txt`.
+- Download `AllSets.json` from [mtgjson.com](http://mtgjson.com/) to `data/AllSets.json`.
 - Run `python download.py` to download lo-res images from `gatherer.wizards.com`. This takes ~20-30min.
 - Plug-in a commodity USB webcam and set it up so that it's pointing down.
 - Calibrate the scanner in `detect.py`.

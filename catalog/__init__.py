@@ -2,13 +2,14 @@
 catalog app
 """
 
+import json
 from catalog.parser import parse_query
-from data import collection
 from flask_cors import CORS
 from flask import Flask, render_template, send_from_directory, jsonify, request
 
 app = Flask(__name__)
 CORS(app)
+collection = json.load(open('data/collection.json', 'r'))
 
 
 @app.route('/')
