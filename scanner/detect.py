@@ -10,12 +10,12 @@ calibrate:
 """
 
 import cv2
-import util
 import pygame
 import imutils
 import numpy as np
 import pygame.camera
 from pygame.locals import KEYDOWN, K_q, K_s, K_SPACE
+from . import util
 
 DEBUG = False
 

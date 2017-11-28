@@ -18,6 +18,7 @@
         text-align: center;
     }
     #cards li {
+        position: relative;
         display: inline-block;
         list-style-type: none;
     }
@@ -27,10 +28,21 @@
         left: 0;
         right: 0;
         width: 100%;
+        z-index: 1;
         text-align: center;
         border-radius: none;
         border: none;
         padding: 0.5em;
+    }
+    .card-meta {
+        position: absolute;
+        bottom: 4px;
+        right: 0;
+        padding: 0.5em;
+        font-size: 0.8em;
+        border-radius: 0em 0 0.5em 0;
+        background: #2c2c2c;
+        color: #fff;
     }
   </style>
 </head>
@@ -38,7 +50,12 @@
 <input id="search" type="text" placeholder="Search" autofocus>
 <ul id="cards">
     {% for card in cards %}
-        <li data-id="{{ card.multiverseid }}"><img src="img/{{ card.multiverseid }}"></li>
+        <li class="card" data-id="{{ card.multiverseid }}">
+            <img src="img/{{ card.multiverseid }}">
+            <ul class="card-meta">
+                <li>${{ card.price or '??' }}</li>
+            </ul>
+        </li>
     {% endfor %}
 </ul>
 <script>
@@ -66,7 +83,7 @@
         }).then(resp => {
             return resp.json();
         }).then(json => {
-            [...document.querySelectorAll('#cards li')].map(c => {
+            [...document.querySelectorAll('#cards .card')].map(c => {
                 c.style.display = 'none';
             });
             json.results.map(mid => {

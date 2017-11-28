@@ -17,6 +17,8 @@ supports:
     - `x:counter` searches for "counter" in text
     - `x!counter` searches for "counter" not in text
     - if using multiple words, use double quotes, e.g. `x:"destroy target"`
+- searching by price:
+    - `p>1` searchs for cards worth more than $1
 
 any of the above can be combined with boolean operators.
 if using multiple, you __must__ combine them with boolean operators, e.g.
@@ -25,12 +27,19 @@ if using multiple, you __must__ combine them with boolean operators, e.g.
 
 """
 
+import operator
 from pyparsing import Literal, Word, ZeroOrMore, Forward, alphanums, oneOf, Group, ParseResults, QuotedString
 
 KEYMAP = {
     'c': 'manaCost', # todo this maybe should be color identity?
     'x': 'text',
-    't': 'type'
+    't': 'type',
+    'p': 'price'
+}
+
+OPS = {
+    '<': operator.lt,
+    '>': operator.gt
 }
 
 
@@ -39,7 +48,7 @@ def Syntax():
 
     # operators
     bool_op = oneOf('& |')
-    contain_op = oneOf(': !')
+    contain_op = oneOf(': ! < >')
 
     # e.g. `c:w` or `c!w` or `t:artifact` or `x:"destroy target creature"`
     filter = Group(Word(alphanums, exact=1) + contain_op + (Word(alphanums) | QuotedString(quoteChar='"')))
@@ -73,9 +82,14 @@ def make_predicate(q):
     i.e. a quoted string or a triplet of [a, :!, b]"""
     if isinstance(q, list):
         type, op, q = q
-        pos = op == ':'
-        q = q.lower()
-        return lambda c: (q in c.get(KEYMAP[type], '').lower()) == pos
+        key = KEYMAP[type]
+        if op in [':', '!']:
+            q = q.lower()
+            pos = op == ':'
+            return lambda c: (q in c.get(key, '').lower()) == pos
+        elif op in ['<', '>']:
+            q = float(q)
+            return lambda c: OPS[op](float(c.get(key) or 0), q)
     else:
         q = q.lower()
         return lambda c: q in c['name'].lower()

@@ -3,11 +3,10 @@ search images by similarity.
 runs a server to minimize image rehashing.
 """
 
-import util
 import imagehash
-import numpy as np
 from PIL import Image
 from data import cards
+from . import util
 
 HASH_SIZE = 128 # must be a power of 2
 
@@ -39,25 +38,3 @@ def search(img, idx, max_distance=50, top_n=3):
         if dist < max_distance:
             results.append({'id': id, 'dist': dist, 'card': cards[id]})
     return sorted(results, key=lambda r: r['dist'])[:top_n]
-
-
-if __name__ == '__main__':
-    from data import fnames, mids
-    from flask import Flask, request, jsonify
-
-    print('preparing index...')
-    idx = create_index(fnames, mids)
-
-    print('starting server...')
-    app = Flask(__name__)
-
-    @app.route('/', methods=['POST'])
-    def query():
-        data = request.get_json()
-        dist = data['max_distance']
-        img = np.array(data['image']).astype('uint8')
-        img = Image.fromarray(img)
-        results= search(img, idx, max_distance=dist)
-        return jsonify(results=results)
-
-    app.run(port=8888)
