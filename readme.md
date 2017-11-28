@@ -1,4 +1,6 @@
-A simple MTG card scanner
+A simple MTG card scanner and catalog searcher
+
+![](demo.gif)
 
 ## Setup
 
@@ -37,3 +39,22 @@ The quantity part is optional if it's just one card.
 - Error rate is about ~2% (25 misses on a collection of 1045 cards).
 
 The error rate likely could be improved by increasing the `HASH_SIZE` in `search.py`. If you do that, you'll want to increase the `max_distance` value in `main.py` as well.
+
+## Search syntax (TODO)
+
+Operators:
+
+- `c:u` search for cards with `u` in the cost
+- `c!g` search for cards without `g` in the cost
+- logical operators for these are ok, e.g.
+    - `c:u | c!g` searches for cards with blue _or_ without green
+    - `c:u & c!g` searches for cards with blue _and_ without green
+    - if an operator is absent, it's assumed to be `or`
+    - you can group boolean operations with parentheses
+
+Filters:
+
+- `c` for color
+- `m` for converted mana cost
+- `t` for type
+- `x` for text
