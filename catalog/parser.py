@@ -106,7 +106,7 @@ def make_predicates(parts):
         return make_predicate(parts)
 
     # check that this is a predicate triplet
-    elif parts[1] in [':', '!']:
+    elif parts[1] in [':', '!', '>', '<']:
         return make_predicate(parts)
 
     # handle boolean operators for predicate pairs
@@ -118,9 +118,11 @@ def make_predicates(parts):
         else:
             return lambda c: a(c) or b(c)
 
+
 def parse_query(query):
     """parses a search query into a predicate"""
     expr = Syntax()
     parts = expr.parseString(query)
     parts = ltr_triplets(parts)
+    print(parts)
     return make_predicates(parts)
