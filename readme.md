@@ -54,6 +54,8 @@ Operators:
 
 - `c:u` search for cards with `u` in the cost
 - `c!g` search for cards without `g` in the cost
+- `p>1` search for cards worth more than $1
+- `p<1` search for cards worth less than $1
 - logical operators for these are ok, e.g.
     - `c:u | c!g` searches for cards with blue _or_ without green
     - `c:u & c!g` searches for cards with blue _and_ without green
@@ -65,3 +67,4 @@ Filters:
 - `c` for color
 - `t` for type
 - `x` for text
+- `p` for price
